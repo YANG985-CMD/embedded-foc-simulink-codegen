@@ -1,0 +1,4 @@
+interface:
+  display_name: "SpeedLoop Simulink Style"
+  short_description: "Build FOC models in local SpeedLoop style."
+  default_prompt: "Use $speedloop-simulink-style to build or revise a Simulink FOC speed-loop model in the local SpeedLoop style."
