@@ -2,7 +2,6 @@
 
 面向 BLDC/PMSM 矢量控制的 Simulink Agent Skill，用于按照统一、可读、适合代码生成的 SpeedLoop 风格创建、修改和审查 FOC 速度环模型。
 
-该技能把一个参考 `speedloop.slx` 工程的模型层级、端口顺序、模块选择、数据字典、求解器和 ERT 代码生成约束提炼成可复用规范。仓库不包含原始 `.slx` 模型。
 
 ## 核心功能
 
