@@ -1,102 +1,113 @@
-# SpeedLoop Simulink Style
+# Embedded FOC Simulink Codegen
 
-面向 BLDC/PMSM 矢量控制的 Simulink Agent Skill，用于按照统一、可读、适合代码生成的 SpeedLoop 风格创建、修改和审查 FOC 速度环模型。
+面向 PMSM/BLDC 矢量控制与嵌入式 C 代码生成的 Codex Skill。它指导 Agent 从控制算法单元、闭环仿真、双闭环与启动逻辑，一直做到 ERT 代码生成、STM32/ARM 固件接口和验证交付。
 
+> Skill 英文名已由 `speedloop-simulink-style` 更新为 `embedded-foc-simulink-codegen`。GitHub 仓库名暂时保留，原链接仍然有效。
 
-## 核心功能
+## 这次增强了什么
 
-- **构建FOC模型**：支持速度环、电流环、Clarke/Park/AntiPark、SVPWM、逆变器和PMSM对象。
-- **统一模型架构**：按照测试平台 → `FOC_Model` → `speedloop`/`currloop` → 变换与控制子系统分层。
-- **块图优先**：优先使用可见Simulink模块，避免无必要的MATLAB Function黑盒。
-- **嵌入式友好**：采用定步长、原子子系统、`single` 数据类型、数据字典和 `ert.tlc` 配置。
-- **控制器规范**：速度和dq电流控制使用Simulink PID Controller、Forward Euler和clamping抗积分饱和。
-- **模型审查**：检查端口、Rate Transition、复位逻辑、PI限幅、数据字典和代码生成设置。
-- **验证流程**：更新模型图并在测试平台存在时执行短时仿真。
+- 不再只模仿单个 `speedloop.slx` 的外观，改为覆盖完整的 FOC 建模与部署流程。
+- 增加 Clarke/Park、反 Park、SVPWM、电流环、速度环、启动状态机的分阶段构建与验证。
+- 增加 Hall、Luenberger、SMO、EKF 等转子反馈方案的统一组件边界。
+- 明确区分仿真对象与生成代码的控制器边界，防止把电机、逆变器、Scope 或测试激励生成进 MCU 代码。
+- 把多速率模型和硬件时序关联起来：电流环对齐 PWM/ADC，速度环为电流环的整数倍。
+- 增加 ERT、C99、ARM Cortex-M、数据字典、标定量、生成接口和固件调度契约。
+- 增加只读 MATLAB 审计脚本，检查模型求解器、字典、控制器边界、Rate Transition、PI 和代码生成设置。
+- 增加数学、环路、启动、故障、代码生成、SIL/PIL 与目标机时序的分层验证清单。
 
-## 推荐模型层级
-
-```text
-Top-level Test Harness
-├─ Stimulus / Feedback Conversion
-├─ Rate Transition
-├─ FOC_Model (Atomic)
-│  ├─ speedloop
-│  │  └─ Speed PI → iqRef
-│  └─ currloop (Atomic)
-│     ├─ State / Enable Logic
-│     ├─ Clark
-│     ├─ Park
-│     ├─ idq_Controller
-│     ├─ AntiPark
-│     └─ SVPWM (Atomic)
-├─ Average-Value Inverter
-├─ Surface Mount PMSM
-└─ Scopes / Goto / From Probes
-```
-
-## 关键建模约定
-
-| 项目 | 默认规范 |
-| --- | --- |
-| 求解器 | Fixed-step / `FixedStepAuto` |
-| 基准步长 | `1e-4` |
-| 代码生成目标 | `ert.tlc` |
-| 主要信号类型 | `single` |
-| 参数管理 | 模型旁的 `.sldd` 数据字典 |
-| PI积分方法 | Forward Euler |
-| 抗积分饱和 | clamping |
-| 控制层接口 | Rate Transition保证确定性传输 |
-
-## 典型接口
-
-`FOC_Model` 输入顺序：
+## 推荐架构
 
 ```text
-ia, ib, ic, v_bus, Motor_OnOff, SpeedRef, SpeedFd, theta
+Simulation Harness
+├─ Command / Fault Stimulus
+├─ Feedback Sampling and Type Conversion
+├─ FOC_Controller or legacy FOC_Model
+│  ├─ CommandAndModeManager
+│  ├─ SpeedLoop                         slow task
+│  ├─ CurrentLoop                       PWM/ADC fast task
+│  │  ├─ Clarke
+│  │  ├─ Park
+│  │  ├─ DqCurrentController
+│  │  ├─ InversePark
+│  │  └─ SVPWM
+│  ├─ StartupAndHandoff
+│  ├─ RotorFeedback                     Hall/encoder/observer
+│  └─ ProtectionAndLimits
+├─ Inverter and PMSM Plant              simulation only
+└─ Logging / Assertions / Scopes        simulation only
 ```
 
-输出：
+控制器输入输出应当具有稳定接口，并标明名称、单位、类型、量程、采样周期、初始化和无效数据处理。已有工程依赖 `FOC_Model`、`currloop`、`speedloop`、`tABC` 等接口时，Skill 会优先保持兼容，而不是为了好看强行改名。
+
+## 采样周期原则
+
+参考模型中常见两组配置：
+
+- 教学双闭环：电流环 100 μs（10 kHz），速度环 1 ms（1 kHz）；
+- 部分无感观测器模型：控制子系统 50 μs。
+
+新版 Skill 不把这些数值当成所有项目的固定答案。实际应先确定 PWM 频率、ADC 采样时刻、计算预算和环路带宽，再令：
 
 ```text
-tABC
+Ts_speed = N × Ts_current, N 为正整数
 ```
 
-`currloop` 输入顺序：
-
-```text
-ia, ib, ic, v_bus, Motor_OnOff, iq_ref, theta
-```
-
-输出：
-
-```text
-tABC, SpeedReset
-```
+跨速率信号必须说明保持、延迟、锁存或缓冲方式，并使用确定性的 Rate Transition、函数调用子系统或调度器映射。
 
 ## 安装
 
-将仓库克隆到Codex技能目录：
+仓库名目前仍是 `speedloop-simulink-style`，但安装目录要使用新的 Skill 名：
 
 ```powershell
 git clone https://github.com/YANG985-CMD/speedloop-simulink-style.git `
-  "$HOME\.codex\skills\speedloop-simulink-style"
+  "$HOME\.codex\skills\embedded-foc-simulink-codegen"
 ```
 
-重新启动Codex会话后，即可在Simulink电机控制任务中使用该技能。
+如果本机已经安装旧版，可改名并拉取更新：
+
+```powershell
+Rename-Item "$HOME\.codex\skills\speedloop-simulink-style" `
+  "embedded-foc-simulink-codegen"
+Set-Location "$HOME\.codex\skills\embedded-foc-simulink-codegen"
+git pull
+```
+
+重新启动 Codex 会话后使用 `$embedded-foc-simulink-codegen`。
 
 ## 使用示例
 
 ```text
-使用 $speedloop-simulink-style 创建一个PMSM FOC速度环模型，包含速度PI、电流PI、Clarke/Park、AntiPark和SVPWM。
+使用 $embedded-foc-simulink-codegen 创建一个用于 STM32G4 的 PMSM FOC 控制器，
+电流环由 PWM/ADC 中断触发，速度环为 10 倍分频，并生成 ERT C99 代码。
 ```
 
 ```text
-使用 $speedloop-simulink-style 检查当前模型是否符合定步长、数据字典和ERT代码生成要求。
+使用 $embedded-foc-simulink-codegen 审查当前 FOC_Model，检查电流环/速度环采样率、
+PI 抗饱和、启动切换、数据字典、ERT 配置和生成代码接口。
 ```
 
 ```text
-按照SpeedLoop风格重构当前FOC_Model，保留现有参数和代码生成配置。
+使用 $embedded-foc-simulink-codegen 为现有模型增加 Hall 与 SMO 可切换的 RotorFeedback，
+保持原有 FOC_Model 端口和固件调用接口不变。
 ```
+
+## 自动审计
+
+在 MATLAB 中执行：
+
+```matlab
+addpath('scripts');
+report = audit_embedded_foc_model('D:/project/motor_control.slx');
+```
+
+如果控制器不叫 `FOC_Controller` 或 `FOC_Model`：
+
+```matlab
+report = audit_embedded_foc_model('motor_control.slx', ...
+    'ControllerPath', 'motor_control/MotorControl');
+```
+
+脚本只加载并更新模型，不保存文件。它输出 PASS/WARN/FAIL，并返回设置、端口、数据字典、PI、Rate Transition、函数调用发生器和功能识别结果。它不能替代闭环仿真、ERT 构建、SIL/PIL 或目标机最坏执行时间测试。
 
 ## 文件结构
 
@@ -106,15 +117,25 @@ speedloop-simulink-style/
 ├─ README.md
 ├─ agents/
 │  └─ openai.yaml
+├─ scripts/
+│  └─ audit_embedded_foc_model.m
 └─ references/
-   └─ style-guide.md
+   ├─ control-architecture.md
+   ├─ embedded-codegen-contract.md
+   ├─ reference-findings.md
+   ├─ style-guide.md
+   └─ verification-checklist.md
 ```
 
-更具体的端口顺序、PI参数名、子系统原子性和审查清单见 [`references/style-guide.md`](references/style-guide.md)。
+## 参考依据与原创说明
 
-## 依赖说明
+本次改良综合分析了用户本地的 STM32G4 Simulink FOC 开发手册 V13.1、本地 Clarke/Park、SVPWM、电流环、启动、速度环、Hall、Luenberger、SMO 与 EKF 模型族，以及旧版 Skill。仓库只保留重新组织和扩展后的通用工程方法、审计规则与原创文档，不上传参考 PDF、截图或原始模型文件。
 
-- 创建和仿真模型需要MATLAB与Simulink。
-- 使用PMSM/逆变器对象时可能需要Simscape Electrical或相应电机控制产品。
-- 生成ERT代码通常需要Embedded Coder。
+具体设计依据与相对旧版的改良见 [`references/reference-findings.md`](references/reference-findings.md)。
 
+## 依赖
+
+- MATLAB 与 Simulink；
+- 生成 ERT 代码通常需要 Embedded Coder；
+- 电机/逆变器高保真对象可能需要 Simscape Electrical 或 Motor Control Blockset；
+- SIL/PIL、模型测试和规范检查能力取决于已安装的 MathWorks 产品与目标支持包。

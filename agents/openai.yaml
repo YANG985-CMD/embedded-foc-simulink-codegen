@@ -1,4 +1,4 @@
 interface:
-  display_name: "SpeedLoop Simulink Style"
-  short_description: "Build FOC models in local SpeedLoop style."
-  default_prompt: "Use $speedloop-simulink-style to build or revise a Simulink FOC speed-loop model in the local SpeedLoop style."
+  display_name: "Embedded FOC Simulink Codegen"
+  short_description: "Build auditable FOC models and embedded C code."
+  default_prompt: "Use $embedded-foc-simulink-codegen to build, revise, or audit a Simulink FOC controller for deterministic embedded code generation."
