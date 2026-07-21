@@ -1,6 +1,6 @@
 # Simulink FOC Skills
 
-能够和官方的skill和mcp强强联合的两个Skill，先让codex配置官方项目：
+能够和官方的skill和mcp强强联合的两个Skill，需要配置官方项目：
 - [Simulink Agentic Toolkit](https://github.com/simulink/simulink-agentic-toolkit)
 - [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit)
 - [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server)
