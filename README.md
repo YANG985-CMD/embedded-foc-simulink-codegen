@@ -1,11 +1,10 @@
 # Simulink FOC Skills
 
-能够和官方的skill和mcp强强联合的两个Skill，官方项目：
+能够和官方的skill和mcp强强联合的两个Skill，先让codex配置官方项目：
 - [Simulink Agentic Toolkit](https://github.com/simulink/simulink-agentic-toolkit)
 - [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit)
 - [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server)
-- 链接发给codex让他给你配置就好
-
+## 本skill的链接发给codex让他给你配置就好，因为我的README里面已经写出来官方项目的链接了。
 ## 1. `embedded-foc-simulink-codegen`
 
 FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环、SVPWM、启动切换、转子反馈、多速率时序、嵌入式接口和受控代码生成。
