@@ -3,7 +3,8 @@
 能够和官方的skill和mcp强强联合的两个Skill，官方项目：
 - [Simulink Agentic Toolkit](https://github.com/simulink/simulink-agentic-toolkit)
 - [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit)
-- [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server)：
+- [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server)
+- 链接发给codex让他给你配置就好
 
 ## 1. `embedded-foc-simulink-codegen`
 
