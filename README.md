@@ -4,7 +4,7 @@
 - [Simulink Agentic Toolkit](https://github.com/simulink/simulink-agentic-toolkit)
 - [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit)
 - [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server)
-- codex自动配置指令：https://github.com/YANG985-CMD/embedded-foc-simulink-codegen帮我配置一下这个项目，以及这个项目README里面链接下的matlab官方mcp和skill也要配置一下。
+- codex自动配置指令：https://github.com/YANG985-CMD/embedded-foc-simulink-codegen 帮我配置一下这个项目，以及这个项目README里面链接下的matlab官方mcp和skill也要配置一下。
 ## 1. `embedded-foc-simulink-codegen`
 
 FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环、SVPWM、启动切换、转子反馈、多速率时序、嵌入式接口和受控代码生成。
