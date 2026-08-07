@@ -1,6 +1,6 @@
 ---
 name: embedded-foc-simulink-codegen
-description: Build, revise, simulate, test, and prepare PMSM/BLDC field-oriented-control Simulink models for deterministic embedded C code generation. Use for Clarke/Park transforms, dq current and speed loops, SVPWM, I-F startup and handoff, Hall/encoder feedback, Luenberger/SMO/EKF/nonlinear-flux observers, multirate execution, ERT, STM32G4 TIM1/ADC/OPAMP/COMP-DAC integration, VOFA/CAN calibration, MCSDK migration, or ARM Cortex-M deployment. Pair with simulink-model-auditor for generic and FOC-specific audits.
+description: Build, revise, simulate, test, and prepare PMSM/BLDC field-oriented-control Simulink models for deterministic embedded C code generation on MCU or DSP targets. Use for Clarke/Park transforms, dq current and speed loops, SVPWM, I-F startup and handoff, Hall/encoder/resolver feedback, Luenberger/SMO/EKF/nonlinear-flux observers, multirate execution, synchronized PWM/current acquisition, analog front ends, independent hardware trips, telemetry/calibration, vendor motor-control SDK migration, ERT, or generated-code deployment. Pair with simulink-model-auditor for generic and FOC-specific audits.
 ---
 
 # Embedded FOC Simulink Codegen
@@ -26,13 +26,13 @@ Do not bypass `model_edit` with `evaluate_matlab_code` plus `add_block`, `add_li
 
 1. Classify the request as algorithm unit, closed-loop simulation, deployment controller, or migration.
 2. Inspect the existing model, project, dictionary, callbacks, referenced models, solver, rates, code mappings, and target settings. Preserve tuned gains and hardware timing without evidence for changing them.
-3. Read only the needed references: `control-architecture.md`, `style-guide.md`, `embedded-codegen-contract.md`, `verification-checklist.md`, and `hardware-commissioning-safety.md`. For STM32G4 teaching models or the Euler/G4 board, also read `stm32g4-manual-capabilities.md`.
+3. Read only the needed references: `control-architecture.md`, `style-guide.md`, `embedded-codegen-contract.md`, `verification-checklist.md`, and `hardware-commissioning-safety.md`. For any target-hardware integration, observer, Hall/encoder feedback, calibration, or vendor-SDK migration, also read `hardware-integration-and-observers.md`.
 4. Build or revise in stages: Clarke/Park, modulation, current loop, startup/handoff, speed loop, then optional estimator. Verify every stage.
 5. Keep one explicit generated boundary such as `FOC_Controller`. Keep inverter, motor, stimuli, scopes, and desktop logging outside it.
-6. Derive the fast task from PWM/ADC timing. Make slower tasks integer multiples and define every crossing explicitly.
+6. Derive the fast task from the PWM/current-acquisition timing contract. Make slower tasks integer multiples and define every crossing explicitly.
 7. Run official structural checks, focused simulations, behavior tests, Model Advisor, generic audit, and FOC audit. Only then consider code generation.
 
-When the input contains the numbered STM32G4 teaching corpus (for example `13.Clark`, `16.CurrLoop_IF`, `18.Lun_Model_Code`, `19.SMO_Model_Code`, `20.EKF_Model_Code`, `23.Nonlinear flux observer`, or `24.HALL sensor speedloop`), follow the corpus map and peripheral/observer rules in `references/stm32g4-manual-capabilities.md`. Treat each folder as a teaching milestone. Migrate only a verified controller boundary into the deployment model; generated example code alone is not production evidence.
+When the input contains a vendor example, generated teaching project, or the numbered STM32G4 corpus, map its peripherals and firmware into the platform-independent contracts in `references/hardware-integration-and-observers.md`. Treat examples as teaching milestones or board baselines. Migrate only a verified controller boundary into the deployment model; generated example code alone is not production evidence.
 
 ## FOC contract
 
@@ -45,13 +45,13 @@ When the input contains the numbered STM32G4 teaching corpus (for example `13.Cl
 
 ## Embedded contract
 
-- Use fixed-step discrete execution and an explicit PWM/ADC-derived base period.
+- Use fixed-step discrete execution and an explicit PWM/current-acquisition-derived base period.
 - Prefer ERT, the chosen C standard, and real ARM Cortex-M word assumptions when available.
 - Use `single` deliberately; retain boolean, integer, fixed-point, or wider accumulator types where required.
 - Keep calibrations and firmware interfaces in version-controlled data definitions. Document units, ranges, types, sample times, validity, reset behavior, and ownership.
 - Inspect generated entry points, scheduling, parameter representation, memory, stack, traceability, and WCET.
-- For STM32G4 targets, bind TIM1 PWM, ADC/OPAMP sampling, COMP/DAC protection, Hall capture, and UART/CAN telemetry through one documented hardware-adapter boundary.
-- Require an explicit one-time generated-model initialize call and a documented fast-step call from the PWM/ADC timing path.
+- Bind the target's PWM timebase, synchronized current acquisition, analog front end, hardware trip, position capture, and telemetry through one documented hardware-adapter boundary.
+- Require an explicit one-time generated-model initialize call and a documented fast-step call from the PWM/current-acquisition timing path.
 
 ## Explicit build gate
 
@@ -71,4 +71,4 @@ Before energizing hardware, read `hardware-commissioning-safety.md` and stop if 
 
 ## Completion evidence
 
-Report the changed model/boundary, control mode, rotor feedback, fast/slow periods and trigger, interface units/types/limits, official tools and tests actually run, audit/Model Advisor results, build authorization, unresolved assumptions, and unavailable products. For the STM32G4/manual path, also report peripheral timing, current/voltage calibration, hardware trip behavior, observer comparison evidence, firmware initialize/step integration, and telemetry update ownership.
+Report the changed model/boundary, control mode, rotor feedback, fast/slow periods and trigger, interface units/types/limits, official tools and tests actually run, audit/Model Advisor results, build authorization, unresolved assumptions, and unavailable products. For target deployment, also report the `ControlPlatformProfile`, peripheral timing, current/voltage calibration, hardware trip behavior, observer comparison evidence, firmware initialize/step integration, vendor-SDK ownership, and telemetry update ownership.

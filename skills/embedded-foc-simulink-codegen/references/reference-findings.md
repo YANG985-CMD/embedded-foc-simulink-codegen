@@ -30,7 +30,7 @@ Common model settings include fixed-step execution, `ert.tlc`, code-only generat
 - Several observer-oriented models use a 50 microsecond controller subsystem sample time.
 - Function-call generators, atomic subsystems, and Rate Transition blocks are used to represent execution boundaries.
 
-Decision: the Skill does not universalize either numeric period. It derives `Ts_current` from PWM/ADC timing and requires all slow periods to be documented integer multiples.
+Decision: the Skill does not universalize either numeric period. It derives `Ts_current` from the target PWM/current-acquisition timing contract and requires all slow periods to be documented integer multiples.
 
 ## Control Findings
 
@@ -53,12 +53,12 @@ Decision: formalize the controller interface and scheduler contract, prefer a th
 ## Manual-Derived Capability Additions
 
 - Luenberger, SMO, EKF, and nonlinear flux observers need algorithm-specific validation, not a shared generic "sensorless" checkbox.
-- STM32G4 peripheral timing, current-channel calibration, hardware trip routing, and communication ownership are part of the deployed control contract.
+- PWM/current-acquisition timing, current-channel calibration, independent hardware-trip routing, and communication ownership are platform-independent parts of the deployed control contract.
 - Hall feedback requires explicit illegal-state, timeout, interpolation, reversal, and zero-speed behavior.
 - VOFA/UART and CAN/FDCAN are useful for calibration and evidence, but must not block the fast loop or update a parameter set non-atomically.
-- MCSDK examples are useful board baselines; MCSDK and generated Simulink control must not both own the same PWM/ADC scheduler.
+- MCSDK examples are useful board baselines; MCSDK and generated Simulink control must not both own the same PWM/current-acquisition scheduler.
 
-Decision: route these tasks through `stm32g4-manual-capabilities.md` and require the additional checks in `verification-checklist.md`.
+Decision: generalize the STM32G4 findings into `hardware-integration-and-observers.md`, retain STM32G4 only as a concrete mapping example, and require the platform-independent checks in `verification-checklist.md`.
 
 ## Issues Found During Corpus Audit
 

@@ -7,7 +7,7 @@
 - codex自动配置指令：https://github.com/YANG985-CMD/embedded-foc-simulink-codegen 帮我配置一下这个项目，以及这个项目README里面链接下的matlab官方mcp和skill也要配置一下。
 ## 1. `embedded-foc-simulink-codegen`
 
-FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环、SVPWM、启动切换、转子反馈、多速率时序、嵌入式接口和受控代码生成。STM32G4 专项路径进一步覆盖 TIM1-ADC-OPAMP-COMP/DAC 外设链路、Hall 低速/反转、Luenberger/SMO/EKF/非线性磁链观测器、VOFA/CAN 标定，以及 MCSDK 与生成代码的迁移边界。
+FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环、SVPWM、启动切换、转子反馈、多速率时序、嵌入式接口和受控代码生成。通用硬件路径进一步覆盖同步 PWM-电流采样链、模拟前端、独立硬件保护、Hall/编码器低速与反转、Luenberger/SMO/EKF/非线性磁链观测器、遥测标定，以及厂商 SDK 与生成代码的迁移边界。
 
 ## 2. `simulink-model-auditor`
 
@@ -33,18 +33,18 @@ FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环�
 
 [![dq 电流环与 SVPWM](skills/embedded-foc-simulink-codegen/assets/foc-current-loop.png)](skills/embedded-foc-simulink-codegen/assets/foc-current-loop.png)
 
-## STM32G4 手册能力
+## 通用硬件与观测器能力
 
-Skill 可识别配套教程中 `13.Clark`、`16.CurrLoop_IF`、`17.SpeedLoop`、`18.Lun_Model_Code`、`19.SMO_Model_Code`、`20.EKF_Model_Code`、`23.Nonlinear flux observer`、`24.HALL sensor speedloop` 等渐进式工程。新增规则不会把示例代码直接视为量产代码，而会检查：
+Skill 先建立平台无关的 `ControlPlatformProfile`，再将目标 MCU/DSP 的 PWM、同步电流采集、模拟前端、硬件 Trip、位置反馈、通信和调度映射到统一适配边界。STM32G4 的 TIM1/ADC/OPAMP/COMP-DAC/FDCAN/MCSDK 只是其中一个具体映射。规则会检查：
 
-- PWM/ADC 采样时序、OPAMP 增益与偏置、COMP/DAC 独立过流关断；
-- I-F 启动、观测器切换、Hall 非法状态/插值/零速反转；
+- PWM 与电流采集时序、模拟前端增益与偏置、独立过流关断；
+- I-F 启动、观测器切换、Hall/编码器非法状态、插值和零速反转；
 - Luenberger、SMO、EKF、非线性磁链观测器各自的参数、数值稳定性和验证指标；
 - 生成模型初始化与快速步函数的真实固件调用位置；
-- VOFA/UART、CAN/FDCAN 标定数据的限幅、原子更新和快速环隔离；
-- MCSDK 与 Simulink 生成控制器的外设和调度所有权。
+- UART、CAN、USB 或其他遥测标定数据的限幅、原子更新和快速环隔离；
+- 厂商电机控制 SDK 与 Simulink 生成控制器的外设和调度所有权。
 
-详细执行规则位于 [`stm32g4-manual-capabilities.md`](skills/embedded-foc-simulink-codegen/references/stm32g4-manual-capabilities.md)。
+详细执行规则位于 [`hardware-integration-and-observers.md`](skills/embedded-foc-simulink-codegen/references/hardware-integration-and-observers.md)。
 
 ## 为什么是强强联合
 
@@ -90,7 +90,7 @@ model_overview、model_read、model_check，再运行 simulation profile 的本�
 执行 FOC 修改：
 
 ```text
-使用 $embedded-foc-simulink-codegen 创建一个 STM32G4 PMSM FOC 控制器。
+使用 $embedded-foc-simulink-codegen 为目标 MCU/DSP 创建一个 PMSM FOC 控制器。
 严格使用官方 Simulink MCP 修改模型；完成后调用 $simulink-model-auditor 做通用审计和 FOC 专项审计。
 ```
 

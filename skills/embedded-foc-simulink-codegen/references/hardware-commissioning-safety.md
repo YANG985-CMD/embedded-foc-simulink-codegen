@@ -29,7 +29,7 @@ Do not energize the power stage until every required item has an owner and recor
 ## Required evidence
 
 - oscilloscope or logic-analyzer capture of gate timing and dead time;
-- ADC sampling position relative to PWM and switching edges;
+- current-acquisition sample position relative to PWM and switching edges;
 - measured current-offset and sensor-polarity results;
 - fault injection showing safe gate disable;
 - target task execution time and scheduling margin;

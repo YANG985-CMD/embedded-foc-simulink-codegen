@@ -45,7 +45,7 @@ ia, ib, ic -> Clarke -> Park -> id/iq errors -> dq PI
             -> voltage limit -> inverse Park -> SVPWM -> dutyABC
 ```
 
-- Run from the ADC/PWM synchronized fast task.
+- Run from the PWM/current-acquisition synchronized fast task.
 - Begin with `id_ref = 0` for surface PMSM operation unless MTPA or field weakening is in scope.
 - Apply current limits before the PI and voltage limits after it.
 - Add anti-windup and explicit enable/reset behavior.
@@ -99,7 +99,7 @@ For observer work, keep reference-only diagnostics in the simulation harness: an
 
 ## Multi-Rate Execution
 
-Let `Ts_current` be the PWM/ADC synchronized base period and `Ts_speed = N * Ts_current`, where `N` is a positive integer. Estimator rate may equal the current rate or another documented integer partition.
+Let `Ts_current` be the PWM/current-acquisition synchronized base period and `Ts_speed = N * Ts_current`, where `N` is a positive integer. Estimator rate may equal the current rate or another documented integer partition.
 
 Use one scheduling pattern consistently:
 
@@ -122,4 +122,4 @@ Add advanced features only after the basic loop passes tests:
 6. fault diagnostics and limp modes;
 7. fixed-point optimization or hardware-specific acceleration.
 
-For the STM32G4 manual-derived workflow, complete peripheral timing, current/voltage calibration, Hall validation, and observer validation before fixed-point optimization. See `stm32g4-manual-capabilities.md`.
+For every hardware target, complete platform profiling, peripheral timing, current/voltage calibration, position-feedback validation, and observer validation before fixed-point optimization. See `hardware-integration-and-observers.md`.

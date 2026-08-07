@@ -50,7 +50,7 @@ Use project constraints when supplied. Otherwise start from this deployment-orie
 | --- | --- | --- |
 | Solver type | Fixed-step | deterministic scheduling |
 | Solver | Discrete/no continuous states | controller implementation |
-| Fixed step | explicit `Ts_current` | matches PWM/ADC task |
+| Fixed step | explicit `Ts_current` | matches PWM/current-acquisition task |
 | System target | `ert.tlc` | embedded component code |
 | Language | C99 | portable embedded C |
 | Production hardware | actual ARM Cortex-M target | correct integer/word assumptions |
@@ -75,7 +75,7 @@ Document a table like this for every generated entry point:
 
 | Entry point | Trigger | Period | Reads | Writes | Deadline |
 | --- | --- | --- | --- | --- | --- |
-| current step | PWM update or ADC end-of-conversion | `Ts_current` | currents, vdc, angle, current ref | duty/compare | before next PWM latch |
+| current step | PWM update or current-sample-ready event | `Ts_current` | currents, vdc, angle, current ref | duty/compare | before next PWM latch |
 | speed step | deterministic decimation/timer | `N*Ts_current` | speed command/feedback, status | iq reference | before next current use |
 | background | main loop/RTOS | noncritical | calibration/telemetry | diagnostics | no fast-loop blocking |
 
@@ -87,12 +87,12 @@ If generated code exposes one base-rate step function, document the internal dec
 2. Inspect generated headers and the report before copying or compiling anything.
 3. Add generated source through the build system. Do not edit generated `.c` files manually.
 4. Write a thin adapter that converts ADC/timer units to the model interface and maps duty outputs back to hardware.
-5. Call the fast entry point only from the documented PWM/ADC timing event. Keep telemetry and blocking HAL calls out of it.
+5. Call the fast entry point only from the documented PWM/current-acquisition timing event. Keep telemetry and blocking driver/HAL calls out of it.
 6. Initialize model state once, then define enable, disable, fault, and reset sequencing.
 7. Measure worst-case execution time and stack on the actual target.
 8. Compare logged target behavior against simulation or SIL/PIL vectors.
 
-For legacy teaching projects, verify the call site in firmware rather than only checking that generated `FOC_Model_initialize` and `FOC_Model_step` symbols exist. Initialization must complete before PWM enable, and the step function must run from the documented PWM/ADC timing event without blocking UART, CAN, or HAL calls.
+For legacy teaching projects, verify the call site in firmware rather than only checking that generated `FOC_Model_initialize` and `FOC_Model_step` symbols exist. Initialization must complete before PWM enable, and the step function must run from the documented PWM/current-acquisition timing event without blocking telemetry or driver/HAL calls.
 
 ## Code Review Questions
 

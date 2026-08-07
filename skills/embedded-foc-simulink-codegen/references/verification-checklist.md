@@ -39,14 +39,16 @@ Record PASS, FAIL, NOT RUN, or NOT APPLICABLE with evidence. Do not convert an u
 - [ ] SMO filtering/phase compensation and chattering, Luenberger discrete gain/poles, EKF `P/Q/R`/innovation/numeric health, or flux-observer drift/offset handling are verified as applicable.
 - [ ] Hall `000`/`111`, illegal transitions, timeout, interpolation, direction reversal, and zero-speed behavior are tested as applicable.
 
-## STM32G4 Peripheral Integration
+## Hardware Integration
 
-- [ ] TIM1 complementary-channel order, polarity, dead time, update/preload behavior, and safe disabled compare values are recorded.
-- [ ] ADC injected trigger and sample position are synchronized to PWM and avoid invalid current-sampling windows.
-- [ ] Current-channel gain, polarity, zero offset, saturation, and ADC mapping are calibrated.
-- [ ] COMP/DAC threshold units and the independent timer-break or gate-disable path are fault-injected.
+- [ ] A `ControlPlatformProfile` records the MCU/DSP, control clock, PWM/current-acquisition trigger, base period, peripheral ownership, data units, and generated-code call sites.
+- [ ] PWM channel order, polarity, dead time, update/latch behavior, minimum pulse, and safe disabled command are recorded.
+- [ ] Current acquisition trigger and sample position are synchronized to PWM and avoid invalid sampling windows.
+- [ ] Current-front-end topology, gain, polarity, zero offset, saturation, and converter-channel mapping are calibrated.
+- [ ] Comparator, gate-driver fault, or other independent overcurrent threshold and PWM-trip/gate-disable path are fault-injected.
 - [ ] DC-bus scaling and undervoltage/overvoltage behavior are verified.
-- [ ] UART/VOFA and CAN/FDCAN telemetry cannot block the fast loop or partially update a calibration set.
+- [ ] Telemetry/calibration transport cannot block the fast loop or partially update a calibration set.
+- [ ] Vendor SDK and generated controller have exactly one owner for PWM, sampling, position feedback, state machine, and fault handling.
 
 ## Scenario Tests
 
@@ -69,7 +71,7 @@ Record PASS, FAIL, NOT RUN, or NOT APPLICABLE with evidence. Do not convert an u
 - [ ] Model Advisor or project code-generation checks have been reviewed.
 - [ ] Code build succeeds and the report contains the expected entry points and data.
 - [ ] Generated code is reproducible and contains no hand edits.
-- [ ] Generated `*_initialize` is called exactly once before enable and `*_step` is called from the documented PWM/ADC ISR or scheduler path.
+- [ ] Generated `*_initialize` is called exactly once before enable and `*_step` is called from the documented PWM/current-acquisition ISR or scheduler path.
 - [ ] SIL/PIL or golden-vector comparison passes when available.
 - [ ] Target worst-case execution time, stack, and memory meet budget.
 
