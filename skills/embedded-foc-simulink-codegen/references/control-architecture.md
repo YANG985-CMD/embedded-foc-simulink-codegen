@@ -95,6 +95,8 @@ Implement one source behind it:
 
 Keep estimator state, sample time, startup validity, and failure behavior separate from the current controller.
 
+For observer work, keep reference-only diagnostics in the simulation harness: angle error, speed error, validity/confidence, PLL error, EKF innovation, and SMO chattering/saturation indicators. Compare Luenberger, SMO, EKF, or nonlinear-flux variants using the same plant, parameter set, sample time, command profile, load disturbance, and noise injection.
+
 ## Multi-Rate Execution
 
 Let `Ts_current` be the PWM/ADC synchronized base period and `Ts_speed = N * Ts_current`, where `N` is a positive integer. Estimator rate may equal the current rate or another documented integer partition.
@@ -119,3 +121,5 @@ Add advanced features only after the basic loop passes tests:
 5. thermal/current derating;
 6. fault diagnostics and limp modes;
 7. fixed-point optimization or hardware-specific acceleration.
+
+For the STM32G4 manual-derived workflow, complete peripheral timing, current/voltage calibration, Hall validation, and observer validation before fixed-point optimization. See `stm32g4-manual-capabilities.md`.

@@ -7,7 +7,7 @@
 - codex自动配置指令：https://github.com/YANG985-CMD/embedded-foc-simulink-codegen 帮我配置一下这个项目，以及这个项目README里面链接下的matlab官方mcp和skill也要配置一下。
 ## 1. `embedded-foc-simulink-codegen`
 
-FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环、SVPWM、启动切换、转子反馈、多速率时序、嵌入式接口和受控代码生成。
+FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环、SVPWM、启动切换、转子反馈、多速率时序、嵌入式接口和受控代码生成。STM32G4 专项路径进一步覆盖 TIM1-ADC-OPAMP-COMP/DAC 外设链路、Hall 低速/反转、Luenberger/SMO/EKF/非线性磁链观测器、VOFA/CAN 标定，以及 MCSDK 与生成代码的迁移边界。
 
 ## 2. `simulink-model-auditor`
 
@@ -32,6 +32,19 @@ FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环�
 快速控制链包含 Clarke、Park、dq 电流 PI、反 Park、SVPWM、启动和闭环切换逻辑。
 
 [![dq 电流环与 SVPWM](skills/embedded-foc-simulink-codegen/assets/foc-current-loop.png)](skills/embedded-foc-simulink-codegen/assets/foc-current-loop.png)
+
+## STM32G4 手册能力
+
+Skill 可识别配套教程中 `13.Clark`、`16.CurrLoop_IF`、`17.SpeedLoop`、`18.Lun_Model_Code`、`19.SMO_Model_Code`、`20.EKF_Model_Code`、`23.Nonlinear flux observer`、`24.HALL sensor speedloop` 等渐进式工程。新增规则不会把示例代码直接视为量产代码，而会检查：
+
+- PWM/ADC 采样时序、OPAMP 增益与偏置、COMP/DAC 独立过流关断；
+- I-F 启动、观测器切换、Hall 非法状态/插值/零速反转；
+- Luenberger、SMO、EKF、非线性磁链观测器各自的参数、数值稳定性和验证指标；
+- 生成模型初始化与快速步函数的真实固件调用位置；
+- VOFA/UART、CAN/FDCAN 标定数据的限幅、原子更新和快速环隔离；
+- MCSDK 与 Simulink 生成控制器的外设和调度所有权。
+
+详细执行规则位于 [`stm32g4-manual-capabilities.md`](skills/embedded-foc-simulink-codegen/references/stm32g4-manual-capabilities.md)。
 
 ## 为什么是强强联合
 

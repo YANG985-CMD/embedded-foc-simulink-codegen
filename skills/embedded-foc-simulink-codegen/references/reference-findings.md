@@ -4,6 +4,7 @@ This Skill was rebuilt from an engineering review of user-provided local materia
 
 - a 276-page STM32G4 Simulink FOC development manual, release V13.1;
 - a local model corpus covering Clarke/Park, SVPWM/V-f, dq current loop, startup state logic, speed loop, Hall feedback, and Luenberger/SMO/EKF observer variants;
+- STM32G4 peripheral and firmware examples covering ADC/DMA, internal OPAMP, TIM1 complementary PWM, COMP/DAC protection, UART/VOFA, CAN/FDCAN, nonlinear flux observation, Hall zero-speed reversal, and ST MCSDK projects;
 - the earlier `speedloop.slx`-based Skill.
 
 The source PDF, screenshots, and model files are not distributed here. This document records generalized findings in original wording.
@@ -48,6 +49,16 @@ Decision: retain this recognizable architecture, but make saturation, bus-voltag
 - Data dictionaries include signals, gains, motor parameters, sample times, and timer-related values.
 
 Decision: formalize the controller interface and scheduler contract, prefer a thin firmware adapter, prohibit hand edits to generated code, and add build/SIL/PIL/target evidence gates.
+
+## Manual-Derived Capability Additions
+
+- Luenberger, SMO, EKF, and nonlinear flux observers need algorithm-specific validation, not a shared generic "sensorless" checkbox.
+- STM32G4 peripheral timing, current-channel calibration, hardware trip routing, and communication ownership are part of the deployed control contract.
+- Hall feedback requires explicit illegal-state, timeout, interpolation, reversal, and zero-speed behavior.
+- VOFA/UART and CAN/FDCAN are useful for calibration and evidence, but must not block the fast loop or update a parameter set non-atomically.
+- MCSDK examples are useful board baselines; MCSDK and generated Simulink control must not both own the same PWM/ADC scheduler.
+
+Decision: route these tasks through `stm32g4-manual-capabilities.md` and require the additional checks in `verification-checklist.md`.
 
 ## Issues Found During Corpus Audit
 

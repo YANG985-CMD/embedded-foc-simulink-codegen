@@ -92,6 +92,8 @@ If generated code exposes one base-rate step function, document the internal dec
 7. Measure worst-case execution time and stack on the actual target.
 8. Compare logged target behavior against simulation or SIL/PIL vectors.
 
+For legacy teaching projects, verify the call site in firmware rather than only checking that generated `FOC_Model_initialize` and `FOC_Model_step` symbols exist. Initialization must complete before PWM enable, and the step function must run from the documented PWM/ADC timing event without blocking UART, CAN, or HAL calls.
+
 ## Code Review Questions
 
 - Is the generated function signature stable and understandable?
