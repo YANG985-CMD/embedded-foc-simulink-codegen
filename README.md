@@ -1,10 +1,5 @@
 # Simulink FOC Skills
 
-能够和官方的skill和mcp强强联合的两个Skill，需要配置官方项目：
-- [Simulink Agentic Toolkit](https://github.com/simulink/simulink-agentic-toolkit)
-- [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit)
-- [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server)
-- codex自动配置指令：https://github.com/YANG985-CMD/embedded-foc-simulink-codegen 帮我配置一下这个项目，以及这个项目README里面链接下的matlab官方mcp和skill也要配置一下。
 ## 1. `embedded-foc-simulink-codegen`
 
 FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环、SVPWM、启动切换、转子反馈、多速率时序、嵌入式接口和受控代码生成。通用硬件路径进一步覆盖同步 PWM-电流采样链、模拟前端、独立硬件保护、Hall/编码器低速与反转、Luenberger/SMO/EKF/非线性磁链观测器、遥测标定，以及厂商 SDK 与生成代码的迁移边界。
@@ -13,6 +8,12 @@ FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环�
 
 通用审计 Skill。可以审计任意 Simulink 模型或子系统，不限于 FOC。检查求解器、采样率、结构连接、模型引用、库链接、数据字典、编译数据类型和代码生成配置；对 FOC 模型再增加 PI、Rate Transition、控制器边界和启动相关专项检查。
 
+
+能够和官方的skill和mcp强强联合的两个Skill，需要配置官方项目：
+- [Simulink Agentic Toolkit](https://github.com/simulink/simulink-agentic-toolkit)
+- [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit)
+- [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server)
+- codex自动配置指令：https://github.com/YANG985-CMD/embedded-foc-simulink-codegen 帮我配置一下这个项目，以及这个项目README里面链接下的matlab官方mcp和skill也要配置一下。
 ## 模型展示
 
 ### FOC 闭环仿真系统
