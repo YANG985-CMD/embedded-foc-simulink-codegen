@@ -1,3 +1,6 @@
+#使用过程中有任何缺点或者bug欢迎联系1829631824@qq.com
+
+
 # Simulink FOC Skills
 
 ## 1. `embedded-foc-simulink-codegen`
