@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulink 清晰建模与模块移植"
+  short_description: "按信号流程整理模型分层、布局和接口，构建可独立移植的离散控制模块"
+  default_prompt: "使用 $simulink-readable-modeling 重构这个 Simulink 模型，让分层、布线和端口便于人阅读，并核对控制模块的独立移植边界。"

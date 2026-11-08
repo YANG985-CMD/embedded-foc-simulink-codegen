@@ -27,7 +27,8 @@ jobs:
         with:
           source-folder: >-
             skills/simulink-model-auditor/scripts;
-            skills/embedded-foc-simulink-codegen/scripts
+            skills/embedded-foc-simulink-codegen/scripts;
+            skills/simulink-readable-modeling/scripts
           select-by-folder: tests
           test-results-junit: test-results/results.xml
           output-detail: detailed

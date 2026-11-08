@@ -11,8 +11,13 @@ FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环�
 
 通用审计 Skill。可以审计任意 Simulink 模型或子系统，不限于 FOC。检查求解器、采样率、结构连接、模型引用、库链接、数据字典、编译数据类型和代码生成配置；对 FOC 模型再增加 PI、Rate Transition、控制器边界和启动相关专项检查。
 
+## 3. `simulink-readable-modeling`
 
-能够和官方的skill和mcp强强联合的两个Skill，需要配置官方项目：
+[Simulink 清晰建模与模块移植](skills/simulink-readable-modeling/SKILL.md)。用于新建或重构人能顺着信号读懂的模型：按功能分层、主链从左到右、同类支路对齐、共用信号就近标注、端口说明单位与周期，并把可复用控制器与采样、日志、逆变器和电机试验台分开。
+
+同时覆盖重排后的端口顺序核对、重复边界信号整理、参数字典管理，以及授权范围内的独立构建与同输入回放。它可独立用于通用 Simulink 布局和重构；FOC 设计时与另外两个 Skill 配合。附带只读 `audit_readable_layout` 工具，检查同层块边界重叠、占位端口名和小字体，实际布线与标签仍通过真实模型视图复查。
+
+三个 Skill 与以下 MathWorks 官方项目配合使用：
 - [Simulink Agentic Toolkit](https://github.com/simulink/simulink-agentic-toolkit)
 - [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit)
 - [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server)
@@ -54,22 +59,23 @@ Skill 先建立平台无关的 `ControlPlatformProfile`，再将目标 MCU/DSP �
 
 这个仓库不是重复实现通用 Simulink 工具，而是在 MathWorks 官方 Simulink Skills 和 MATLAB MCP 之上增加 FOC 专业能力与工程门禁。
 
-| MathWorks 官方 Skill/MCP | 本仓库的两个 Skill | 联合后的效果 |
+| MathWorks 官方 Skill/MCP | 本仓库的 Skill | 联合后的效果 |
 | --- | --- | --- |
 | `model_overview`、`model_read`、`model_query_params` | FOC 架构、角度约定、启动切换和多速率规则 | 先理解真实模型，再作专业判断，减少凭名称猜测 |
 | `model_edit`、`model_check` | 控制器/电机边界和可生成代码约束 | 形成“读取 → 修改 → 复查 → 结构检查”的闭环 |
+| 官方布局与子系统重构工具 | 清晰分层、对齐支路、物理端口名和模块依赖契约 | 人能阅读和维护，控制模块可独立迁移 |
 | `SimulationInput`、`model_test` | 启动、反转、负载阶跃、故障和抗饱和场景 | 将 FOC 要求转成可重复的仿真与行为测试 |
 | 项目、数据字典和模型引用管理 | 标定参数、固件接口与所有权规则 | 模型、数据和生成代码接口保持一致 |
 | Model Advisor 与 MATLAB 静态分析 | 通用审计 + FOC 专项审计 | 同时获得官方检查证据和领域风险报告 |
 | MATLAB/Simulink/Embedded Coder 执行能力 | deployment profile、硬件安全清单和显式授权 | 审计有 FAIL 或未明确授权时拒绝调用 `slbuild` |
 
-官方工具负责可靠地操作和检查模型；`embedded-foc-simulink-codegen` 负责把 FOC 做正确；`simulink-model-auditor` 负责判断模型是否具备继续验证或部署的条件。三者组合后，AI 不只是“会画 Simulink 模型”，而是能够按可追溯、可测试、可审计的工程流程工作。
+官方工具负责操作和检查模型；`embedded-foc-simulink-codegen` 负责 FOC 领域设计；`simulink-readable-modeling` 负责图形组织、重构和可移植模块边界；`simulink-model-auditor` 负责核对后续验证或部署的条件。
 
 
 
 ## 安装
 
-先克隆仓库，再把两个 Skill 目录复制到 Codex 的 skills 目录：
+先克隆仓库，再把需要的 Skill 目录复制到 Codex 的 skills 目录：
 
 ```powershell
 git clone https://github.com/YANG985-CMD/embedded-foc-simulink-codegen.git .\simulink-skills
@@ -77,11 +83,21 @@ Copy-Item .\simulink-skills\skills\embedded-foc-simulink-codegen `
   "$HOME\.codex\skills\embedded-foc-simulink-codegen" -Recurse
 Copy-Item .\simulink-skills\skills\simulink-model-auditor `
   "$HOME\.codex\skills\simulink-model-auditor" -Recurse
+Copy-Item .\simulink-skills\skills\simulink-readable-modeling `
+  "$HOME\.codex\skills\simulink-readable-modeling" -Recurse
 ```
 
-也可以只安装其中一个。要使用代码生成门禁，必须同时安装两个 Skill。
+也可以单独安装清晰建模 Skill。要使用 FOC 代码生成门禁，需要同时安装 `embedded-foc-simulink-codegen` 和 `simulink-model-auditor`。
 
 ## 使用示例
+
+新建或整理模型：
+
+```text
+使用 $simulink-readable-modeling 参考已有工程重构这个模型。
+让主控制链、d/q 支路、端口和采样周期便于人阅读，把控制器与试验台分开；
+保留原有参数和算法，并对比重构前后的相同工况数据。
+```
 
 审计任意模型：
 
@@ -117,6 +133,15 @@ foc = audit_embedded_foc_model('motor_control.slx', ...
 
 审计脚本只读模型，不会保存修改。`READY` 只表示脚本检查通过，不等于功能正确、标准合规或硬件安全；仍需官方 `model_test`、Model Advisor、SIL/PIL、目标机时序和硬件保护验证。
 
+清晰建模的只读布局检查（模型已打开）：
+
+```matlab
+addpath('skills/simulink-readable-modeling/scripts');
+layout = audit_readable_layout('motor_control', 'Recursive', true);
+```
+
+该工具不加载、编译、修改或保存模型。报告列出实际覆盖的视图；块边界检查不包含标签范围和线的路由，需结合实际图形检查。详见 [布局检查说明](skills/simulink-readable-modeling/references/layout-audit.md)。
+
 ## 代码生成门禁
 
 ```matlab
@@ -138,11 +163,14 @@ assertSuccess(results);
 
 GitHub Actions 使用 MathWorks 官方 `setup-matlab@v3` 和 `run-tests@v3`，以 R2024b 作为稳定测试基线；CI 不执行真实 Embedded Coder 构建。
 
+本地测试可通过环境变量 `SIMULINK_SKILL_TEST_TMP` 指定临时夹具目录；未设置时使用 MATLAB 默认临时目录。
+
 ## 目录
 
 ```text
 skills/embedded-foc-simulink-codegen/  FOC 执行 Skill
 skills/simulink-model-auditor/        通用 + FOC 审计 Skill
-tests/                                两个 Skill 的 MATLAB utility tests
+skills/simulink-readable-modeling/    清晰建模、布局重构与模块移植 Skill
+tests/                               三个 Skill 的 MATLAB utility tests
 .github/workflows/matlab-tests.yml    GitHub Actions
 ```

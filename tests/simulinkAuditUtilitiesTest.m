@@ -187,9 +187,13 @@ classdef simulinkAuditUtilitiesTest < matlab.unittest.TestCase
 end
 
 function fixture = createAuditFixture(kind)
-folder = tempname;
+temporaryRoot = getenv('SIMULINK_SKILL_TEST_TMP');
+if isempty(temporaryRoot)
+    temporaryRoot = tempdir;
+end
+folder = tempname(temporaryRoot);
 mkdir(folder);
-[~, token] = fileparts(tempname);
+[~, token] = fileparts(folder);
 modelName = matlab.lang.makeValidName(['focAudit_' token]);
 if strcmp(kind, 'bad')
     variant = 'unsafe';
