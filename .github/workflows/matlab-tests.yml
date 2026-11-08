@@ -25,10 +25,7 @@ jobs:
       - name: Run utility tests
         uses: matlab-actions/run-tests@v3
         with:
-          source-folder: >-
-            skills/simulink-model-auditor/scripts;
-            skills/embedded-foc-simulink-codegen/scripts;
-            skills/simulink-readable-modeling/scripts
+          source-folder: skills
           select-by-folder: tests
           test-results-junit: test-results/results.xml
           output-detail: detailed
