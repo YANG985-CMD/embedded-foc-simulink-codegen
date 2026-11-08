@@ -19,6 +19,12 @@ Use separate scope views when a diagram cannot remain readable on one screen. A 
 
 For a new control design, function names and ports should be meaningful and code-generation-safe. For existing models, preserve public interface names and external mappings unless changing them is part of the task. Put additional explanations in descriptions or annotations rather than breaking firmware names for cosmetic reasons.
 
+## Visual acceptance before delivery
+
+1. Export the final saved model and review the overview and key subdiagrams at their intended display size. For video, inspect frames from the encoded overview and each key close-up at playback size. Check frames around changes in framing when a transition moves or crops the diagram.
+2. Follow the main path and each visible feedback path from source to destination. Check for wires passing through unrelated blocks, avoidable backtracking, crossings that make connections ambiguous, and wires or overlays obscuring port names. Confirm that labels and endpoints remain legible in the final crop. A clean block-overlap report still requires this review.
+3. If the view is crowded, give the main chain and diagnostic taps separate space. Use meaningful local tags for distant feedback and split the overview from detailed views if needed. Keep essential text legible. Export again after the fix and repeat the review on the deliverable.
+
 ## Regroup existing blocks without losing behavior
 
 Use the official grouping/expansion workflow to retain block identity and wiring. Inspect the new boundary rather than assuming its generated interface is satisfactory:

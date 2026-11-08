@@ -28,7 +28,7 @@ Read [layout-and-refactoring.md](references/layout-and-refactoring.md) when arra
 - Keep main-chain connections direct. Use meaningful **local** Goto/From labels for shared measurements, distant diagnostics, or feedback that would obscure that chain. Keep the input-source column separate from tags near consuming modules.
 - Size subsystems for their port labels and give connected rows enough clearance. Separate reference, measurement, limit, and enable signals in a consistent order.
 - Treat automatic layout as a first pass. Structural edits can move previously arranged blocks. Review again after adding routing blocks, and restore the intended rows and columns through the supported layout tool.
-- Inspect the real diagram and exported views for blocks or labels covering each other, wires passing through unrelated blocks, confusing crossings, long return paths, and unreadable port names. Do not shrink essential labels to hide crowding.
+- Before delivery, review the saved model's exports at their final display size. If the model appears in a video, inspect the encoded overview and key close-ups at playback size. Follow the [visual acceptance checklist](references/layout-and-refactoring.md#visual-acceptance-before-delivery) even when the block-overlap check passes.
 
 ## Make the reusable boundary concrete
 
