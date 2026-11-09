@@ -15,6 +15,8 @@ Do not require a local reference corpus to be present. If it is absent, use the 
 5. Route feedback visibly around the flow, or use a named local feedback tag where a return line would obscure the diagram.
 6. Add supporting blocks, then inspect the settled result. A final position pass may be necessary after structural changes trigger the layout engine.
 
+After moving blocks, reroute affected existing lines through the supported layout workflow or the native line-routing API. Inspect the exported paths again. Position changes alone can leave obsolete long line segments. If logging makes the overview hard to follow, group the test bench, algorithm, and results into distinct subsystems and use named vectors or buses for their diagnostic interfaces. Keep signal names, units, and element order explicit inside each group.
+
 Use separate scope views when a diagram cannot remain readable on one screen. A child scope should explain one operation, not reproduce the entire parent in miniature. Subsystem previews are optional context, not the source of essential explanations.
 
 For a new control design, function names and ports should be meaningful and code-generation-safe. For existing models, preserve public interface names and external mappings unless changing them is part of the task. Put additional explanations in descriptions or annotations rather than breaking firmware names for cosmetic reasons.
