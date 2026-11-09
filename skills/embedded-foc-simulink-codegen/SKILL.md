@@ -36,8 +36,8 @@ When the input contains a vendor example, generated teaching project, or the num
 
 ## Choose the deliverable before applying the build gate
 
-- For a teaching simulation or public learning example, use `simulink-readable-modeling` for the runnable single-SLX package and use the auditor's `simulation` profile. Store default parameters and stimuli in the model. The standalone file is verified by running it in isolation.
-- For MCU/DSP deployment or the build helper below, audit the deployment controller with the `deployment` profile and meet its data dictionary and target requirements. If both deliverables are requested, keep the public SLX self-contained and apply the deployment checks to a separate controller build. Replay the same input trace to verify that the controller behavior agrees across the two.
+- For a teaching simulation or public learning example, use `simulink-readable-modeling` to package a main SLX and its neighboring SLDD. Keep the default stimuli in the model and shared parameters in the dictionary. Use the auditor's `simulation` profile and verify the default run with just the copied pair.
+- For MCU/DSP deployment or the build helper below, use the `deployment` profile and satisfy its dictionary and target checks. If the model supports both workflows, build its designated controller subsystem using the same model and dictionary. Use a separate deployment project when target-specific requirements call for one. Compare the same sampled inputs and controller outputs across simulation and generated C when the toolchain is available.
 
 ## FOC contract
 
