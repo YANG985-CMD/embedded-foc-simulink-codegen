@@ -17,6 +17,12 @@ FOC 执行 Skill。负责 PMSM/BLDC 的 Clarke/Park、dq 电流环、速度环�
 
 同时覆盖重排后的端口顺序核对、重复边界信号整理、参数字典管理，以及授权范围内的独立构建与同输入回放。它可独立用于通用 Simulink 布局和重构；FOC 设计时与另外两个 Skill 配合。附带只读 `audit_readable_layout` 工具，检查同层块边界重叠、占位端口名和小字体，实际布线与标签仍通过真实模型视图复查。
 
+### 同一个项目怎么配合
+
+- **教学仿真**用清晰建模 Skill 交付单个 `.slx`，模型内保存默认参数和工况。用审计 Skill 的 `simulation` 模式检查，再单独复制模型验证能直接运行。
+- **生成嵌入式 C 或准备上板**用 FOC 执行 Skill，并对部署控制器使用 `deployment` 审计。该模式要求数据字典可解析，也核对目标和采样配置。
+- **两种交付都需要**时，教学版保留为单文件，部署构建使用单独的控制器工程。两边用同一组输入回放，核对控制器行为。
+
 三个 Skill 与以下 MathWorks 官方项目配合使用：
 - [Simulink Agentic Toolkit](https://github.com/simulink/simulink-agentic-toolkit)
 - [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit)

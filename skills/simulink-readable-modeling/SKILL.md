@@ -39,7 +39,7 @@ For new teaching examples, paper videos, and public learning downloads, deliver 
 - The default run must resolve its user files from the single SLX. Keep initialization, input data, and reference models free of required companion `.m`, `.mat`, `.sldd`, or `.slx` files. If an embedded callback is needed, keep it self-contained and avoid reliance on preloaded base-workspace variables or project paths. Declare the MATLAB release and required MathWorks products or support packages.
 - Verify the actual download in a clean MATLAB session and a fresh directory containing only the SLX. Open it and run the default case without setup, then check the expected traces. When consolidating an existing model, compare the same input and output traces against its baseline before accepting the standalone copy.
 
-Offer batch comparisons, raw results, C sources, and board adapters as optional supporting downloads where applicable. The standalone teaching file is the main entry point. Apply the deployment project's declared dependencies when working on an explicitly separate hardware or multi-model deliverable.
+Use the auditor's `simulation` profile for the teaching file. Offer batch comparisons, raw results, C sources, and board adapters as optional supporting downloads where applicable. When the same task requests embedded deployment, apply the `deployment` profile and its declared dependencies to a separate controller build. Verify the same controller behavior in both deliverables using the same sampled inputs.
 
 ## Make the reusable boundary concrete
 

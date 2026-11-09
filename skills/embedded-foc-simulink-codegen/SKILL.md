@@ -30,9 +30,14 @@ Do not bypass `model_edit` with `evaluate_matlab_code` plus `add_block`, `add_li
 4. Build or revise in stages: Clarke/Park, modulation, current loop, startup/handoff, speed loop, then optional estimator. Verify every stage.
 5. Keep one explicit generated boundary such as `FOC_Controller`. Keep inverter, motor, stimuli, scopes, and desktop logging outside it.
 6. Derive the fast task from the PWM/current-acquisition timing contract. Make slower tasks integer multiples and define every crossing explicitly.
-7. Run official structural checks, focused simulations, behavior tests, Model Advisor, generic audit, and FOC audit. Only then consider code generation.
+7. Run official structural checks, focused simulations, behavior tests, Model Advisor, generic audit, and FOC audit. Use the audit profile for the requested deliverable.
 
 When the input contains a vendor example, generated teaching project, or the numbered STM32G4 corpus, map its peripherals and firmware into the platform-independent contracts in `references/hardware-integration-and-observers.md`. Treat examples as teaching milestones or board baselines. Migrate only a verified controller boundary into the deployment model; generated example code alone is not production evidence.
+
+## Choose the deliverable before applying the build gate
+
+- For a teaching simulation or public learning example, use `simulink-readable-modeling` for the runnable single-SLX package and use the auditor's `simulation` profile. Store default parameters and stimuli in the model. The standalone file is verified by running it in isolation.
+- For MCU/DSP deployment or the build helper below, audit the deployment controller with the `deployment` profile and meet its data dictionary and target requirements. If both deliverables are requested, keep the public SLX self-contained and apply the deployment checks to a separate controller build. Replay the same input trace to verify that the controller behavior agrees across the two.
 
 ## FOC contract
 
