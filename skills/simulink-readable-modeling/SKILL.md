@@ -1,6 +1,6 @@
 ---
 name: simulink-readable-modeling
-description: Build or refactor Simulink models with human-readable hierarchy, signal-flow layout, explicit interfaces, and portable discrete controller modules. Use when a diagram is tangled, a reference model's engineering style should be adopted, reusable subsystems are needed, or controller and simulation-harness responsibilities need separating. For audit-only requests, prefer simulink-model-auditor.
+description: Build or refactor Simulink models with readable diagrams, portable discrete controllers, and standalone teaching simulations that run from one SLX file. Use for signal-flow layout, reusable subsystems, or packaging a simulation for others to open and run. For audit-only requests, prefer simulink-model-auditor.
 ---
 
 # Simulink Readable Modeling
@@ -30,11 +30,22 @@ Read [layout-and-refactoring.md](references/layout-and-refactoring.md) when arra
 - Treat automatic layout as a first pass. Structural edits can move previously arranged blocks. Review again after adding routing blocks, and restore the intended rows and columns through the supported layout tool.
 - Before delivery, review the saved model's exports at their final display size. If the model appears in a video, inspect the encoded overview and key close-ups at playback size. Follow the [visual acceptance checklist](references/layout-and-refactoring.md#visual-acceptance-before-delivery) even when the block-overlap check passes.
 
+## Package teaching simulations as one runnable SLX
+
+For new teaching examples, paper videos, and public learning downloads, deliver one clearly named top-level `.slx` per example. Opening that file and clicking **Run** must execute a representative default case and show its results in a Scope or Simulation Data Inspector.
+
+- Keep the test case, controller, inverter, and plant as distinct internal subsystems. Bring separately referenced controller models or custom libraries needed by the default run into the same file as readable subsystems. Preserve rates, execution order, types, and initialization.
+- Store named parameters and lookup tables in the model workspace with **Model File** as its data source. Use subsystem mask parameters or explicit inputs for settings that must travel with a copied controller. Keep default stimuli inside the model, for example with Step, Ramp, and Constant blocks or time-series data stored in the model workspace.
+- The default run must resolve its user files from the single SLX. Keep initialization, input data, and reference models free of required companion `.m`, `.mat`, `.sldd`, or `.slx` files. If an embedded callback is needed, keep it self-contained and avoid reliance on preloaded base-workspace variables or project paths. Declare the MATLAB release and required MathWorks products or support packages.
+- Verify the actual download in a clean MATLAB session and a fresh directory containing only the SLX. Open it and run the default case without setup, then check the expected traces. When consolidating an existing model, compare the same input and output traces against its baseline before accepting the standalone copy.
+
+Offer batch comparisons, raw results, C sources, and board adapters as optional supporting downloads where applicable. The standalone teaching file is the main entry point. Apply the deployment project's declared dependencies when working on an explicitly separate hardware or multi-model deliverable.
+
 ## Make the reusable boundary concrete
 
 When reusable or generated control modules are in scope, read [portable-control-contract.md](references/portable-control-contract.md). State units, type, dimension, rate, direction, initialization/reset, parameter ownership, and adapter ownership at the boundary.
 
-Keep stimuli, sampling-device models, motor/plant models, scopes, and desktop logging in the harness. Pass calibrated measurements and commands through ports. Keep timer-count conversion, peripheral access, and board-specific shutdown in the adapter. Keep parameters and lookup tables in versioned dictionaries or other self-contained project data.
+Keep stimuli, sampling-device models, motor/plant models, scopes, and desktop logging in the harness. Pass calibrated measurements and commands through ports. Keep timer-count conversion, peripheral access, and board-specific shutdown in the adapter. Store parameters and lookup tables inside standalone teaching models. Use declared project data such as versioned dictionaries when a separate deployment workflow requires it.
 
 An atomic subsystem expresses an execution boundary; a reusable function setting expresses code packaging. Choose these deliberately rather than marking every mathematical group atomic. Preserve justified boolean, integer, fixed-point, and accumulator types. Derive periods and limits from the actual target rather than copying the reference's example values.
 
@@ -52,4 +63,4 @@ The optional read-only helper [audit_readable_layout.m](scripts/audit_readable_l
 
 ## Handoff
 
-Deliver the edited models and their declared dependencies, an entry point or clear opening/running instructions, relevant scope images, and a concise change/validation record. For a reusable control module, include its interface/adapter contract and the independent-build evidence actually obtained. Keep temporary fixtures, caches, raw diagnostic dumps, personal paths, and unrelated source material out of the skill and public package.
+Identify the one SLX to open for a teaching example. For other projects, list the entry point and declared dependencies. Include relevant scope images and a concise change/validation record. For a reusable control module, include its interface/adapter contract and the independent-build evidence actually obtained. Keep temporary fixtures, caches, raw diagnostic dumps, personal paths, and unrelated source material out of the skill and public package.
