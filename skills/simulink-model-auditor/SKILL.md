@@ -27,7 +27,7 @@ For a disposable demonstration model, run `create_simulink_audit_example`. It cr
 
 - Any model: run `audit_simulink_model` with `Profile="simulation"` or `"deployment"`.
 - FOC model: run the generic audit first, then `audit_embedded_foc_model` with the same profile and controller path.
-- Teaching example delivered as SLX plus SLDD: use `simulation`. Verify that the copied model resolves the neighboring dictionary and runs with just those two files. A missing dictionary is a warning in this profile and still fails acceptance of the promised two-file package.
+- Teaching example: use `simulation`. For SLX-only delivery, verify parameters resolve from the model itself and that the model runs alone. A missing-dictionary warning is expected for that format. For SpeedLoop-style delivery, verify the neighboring dictionary resolves and the pair runs in isolation. Treat a missing companion dictionary as a packaging failure for that format.
 - Production controller or code generation through the FOC build helper: use `deployment`. This profile treats a missing or unresolved data dictionary as a failure. Audit the designated controller scope in the teaching model if it is also the build source, or audit the separate deployment project when required by the target.
 - Compliance request: run the appropriate official Model Advisor workflow after structural checks; do not infer a standard from the model name.
 - Fix request: stop the audit-only lane, get explicit permission, and hand the edit to `building-simulink-models` or the relevant execution Skill. Re-run both official and local audits afterward.

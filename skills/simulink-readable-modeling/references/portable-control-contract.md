@@ -31,7 +31,7 @@ Choose atomic subsystems at meaningful execution boundaries. Select inline, nonr
 
 Use `single` where appropriate for embedded control, while preserving boolean/integer/fixed-point interfaces and wider arithmetic where needed. A double-precision plant may share physical parameters with a single-precision controller if conversion is explicit and verified. Keep initial conditions, integration method, reset semantics, actuator limits, and anti-windup paths inspectable.
 
-Store tunable parameters and table breakpoints in the model's linked data dictionary. When the controller is intended to be copied on its own, expose its required configuration as mask parameters or explicit inputs, or document and provide its required dictionary entries. Verify the copied subsystem with that interface. Recompute dependent tables when the motor, bus, limits, or discretization changes.
+Store tunable parameters and table breakpoints in the model workspace for SLX-only delivery, or in the neighboring dictionary for SpeedLoop-style delivery. For a controller that will be copied on its own, expose its required configuration as mask parameters or explicit inputs, or document and provide its required dictionary entries. Verify the copied subsystem with that interface. Recompute dependent tables when the motor, bus, limits, or discretization changes.
 
 ## Prove the dependency boundary
 
