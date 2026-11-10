@@ -27,6 +27,16 @@ For a new control design, function names and ports should be meaningful and code
 2. Follow the main path and each visible feedback path from source to destination. Check for wires passing through unrelated blocks, avoidable backtracking, crossings that make connections ambiguous, and wires or overlays obscuring port names. Confirm that labels and endpoints remain legible in the final crop. A clean block-overlap report still requires this review.
 3. If the view is crowded, give the main chain and diagnostic taps separate space. Use meaningful local tags for distant feedback and split the overview from detailed views if needed. Keep essential text legible. Export again after the fix and repeat the review on the deliverable.
 
+## First-open walkthrough
+
+Reopen the saved SLX and start at its default view in an ordinary Simulink window. Use the diagram, visible labels, and normal block dialogs as the reader would. Keep the starting information visible at the default zoom.
+
+1. **Find the entry.** Identify the model's purpose, the default case, and the named block where that case is changed. For a standalone controller, identify the command and measurement ports and their units instead.
+2. **Follow one representative signal.** Trace a real command or measurement from its source into the key subsystem and out again. Follow the return path when it is part of the operation. Inside the subsystem, locate the few blocks that carry out the main calculation and explain what physical quantity they turn into what output. Use names, units, and vector ordering where needed to follow the path. For example, trace a speed reference in rpm through the speed PI to a q-axis current reference in amperes, then find where measured speed returns.
+3. **Read the result.** Run the default simulation and locate the first Scope or Simulation Data Inspector signal to inspect. Use labeled traces and units so the reader can tell a reference, a measurement, and an estimate apart when shown together. For a standalone controller, follow the output port and verify its meaning, unit, and element order instead.
+
+Record the actual block names, one traced path, and the result view or output port in the validation notes. If a step depends on reading a setup script, inspecting hidden model metadata, or knowing an undocumented tag, clarify the diagram and repeat the walkthrough. Geometry checks help locate layout issues. The walkthrough checks whether the reader can use the saved diagram.
+
 ## Regroup existing blocks without losing behavior
 
 Use the official grouping/expansion workflow to retain block identity and wiring. Inspect the new boundary rather than assuming its generated interface is satisfactory:

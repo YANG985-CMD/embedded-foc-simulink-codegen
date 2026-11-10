@@ -34,11 +34,13 @@ After a partial edit, immediately inspect and check the scope. After completing 
 Read [layout-and-refactoring.md](references/layout-and-refactoring.md) when arranging or regrouping a diagram.
 
 - Keep the main signal path visible from left to right. Place parallel channels in matching rows, with matching port order and internal structure.
+- Make the opening view show what the model does, where the main signal starts, and where to inspect the result. Use a short annotation near the relevant blocks when names alone leave those steps unclear.
 - At the system level show responsibilities; expose equations, PI state, or modulation logic at the next level. Use native inspectable blocks for ordinary transforms and control operations.
 - Keep main-chain connections direct. Use meaningful **local** Goto/From labels for shared measurements, distant diagnostics, or feedback that would obscure that chain. Keep the input-source column separate from tags near consuming modules.
 - Size subsystems for their port labels and give connected rows enough clearance. Separate reference, measurement, limit, and enable signals in a consistent order.
 - Treat automatic layout as a first pass. Structural edits can move previously arranged blocks. Review again after adding routing blocks, and restore the intended rows and columns through the supported layout tool.
 - Before delivery, review the saved model's exports at their final display size. If the model appears in a video, inspect the encoded overview and key close-ups at playback size. Follow the [visual acceptance checklist](references/layout-and-refactoring.md#visual-acceptance-before-delivery) even when the block-overlap check passes.
+- Perform the [first-open walkthrough](references/layout-and-refactoring.md#first-open-walkthrough) in the saved SLX. Fix any step the reader cannot follow from the diagram before handing it off as readable.
 
 ## Package and verify the selected format
 
@@ -73,4 +75,4 @@ The optional read-only helper [audit_readable_layout.m](scripts/audit_readable_l
 
 ## Handoff
 
-Identify the SLX to open and list its SLDD when the two-file format was chosen. Include relevant scope images and a concise change/validation record. For a reusable control module, include its interface/adapter contract and the independent-build evidence actually obtained. Keep temporary fixtures, caches, raw diagnostic dumps, personal paths, and unrelated source material out of the skill and public package.
+Identify the SLX to open and list its SLDD when the two-file format was chosen. In the handoff or existing README, give a short route using the actual names of the starting block, key subsystem, and result view or output port. Include relevant scope images and a concise change/validation record. For a reusable control module, include its interface/adapter contract and the independent-build evidence actually obtained. Keep temporary fixtures, caches, raw diagnostic dumps, personal paths, and unrelated source material out of the skill and public package.
