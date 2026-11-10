@@ -11,8 +11,8 @@ Make each diagram understandable at its own level, and make reusable control mod
 
 Every model built, changed, or repackaged with this skill uses one of these three choices. This includes control algorithms, engineering simulations, deployment controllers, layout changes, and teaching examples. Ask at the start unless the user already selected a mode or delegated the choice for this task. Inspect existing files if needed, and wait for the answer before editing or creating models.
 
-1. **Only `.slx`.** Store parameters, types, and lookup tables in the model workspace with **Model File** as its data source. Deliver one model file.
-2. **`.slx` + `.sldd` (SpeedLoop style).** Store shared parameters, types, and lookup tables in a same-named dictionary next to the model. Link it by filename. Deliver the pair.
+1. **One file (`.slx`).** Keep the diagram and its data together for sharing as a single file. Store parameters, types, and lookup tables in the model workspace with **Model File** as its data source.
+2. **Two files (`.slx` + `.sldd`).** Keep the diagram in the SLX and manage shared parameters, types, and lookup tables in a separate Simulink Data Dictionary. Use the same base name for both files, keep them together, and link the dictionary by filename. Open the SLX.
 3. **AI decides.** Select mode 1 or 2 based on the model's dependencies and purpose. Prefer a single SLX for self-contained models and a companion dictionary for shared typed calibrations, versioned parameter sets, or audit-gated embedded builds. Report the selected mode and reason.
 
 The selected format governs the primary model files. Keep model-specific dependencies within those files. A separate build copy used for embedded C can have the dictionary and settings required by the deployment audit. Generated code, test results, and board adapters may be supplied separately when requested.
@@ -39,8 +39,8 @@ Read [layout-and-refactoring.md](references/layout-and-refactoring.md) when arra
 - Keep main-chain connections direct. Use meaningful **local** Goto/From labels for shared measurements, distant diagnostics, or feedback that would obscure that chain. Keep the input-source column separate from tags near consuming modules.
 - Size subsystems for their port labels and give connected rows enough clearance. Separate reference, measurement, limit, and enable signals in a consistent order.
 - Treat automatic layout as a first pass. Structural edits can move previously arranged blocks. Review again after adding routing blocks, and restore the intended rows and columns through the supported layout tool.
-- Before delivery, review the saved model's exports at their final display size. If the model appears in a video, inspect the encoded overview and key close-ups at playback size. Follow the [visual acceptance checklist](references/layout-and-refactoring.md#visual-acceptance-before-delivery) even when the block-overlap check passes.
-- Perform the [first-open walkthrough](references/layout-and-refactoring.md#first-open-walkthrough) in the saved SLX. Fix any step the reader cannot follow from the diagram before handing it off as readable.
+- Before delivery, review the relevant saved views at their final display size. If the model appears in a video, inspect the affected frames at playback size. Follow the [visual acceptance checklist](references/layout-and-refactoring.md#visual-acceptance-before-delivery) even when the block-overlap check passes.
+- Use the saved SLX for the [first-open walkthrough](references/layout-and-refactoring.md#first-open-walkthrough). For a new model or a changed overall reading route, check one path from entry to result. For a localized edit, check only the affected portion and its connections to the surrounding model. Fix any ambiguity found on that path.
 
 ## Package and verify the selected format
 
@@ -49,7 +49,7 @@ The SLX is the only file to open. For a runnable simulation, clicking **Run** mu
 - Keep the test case, controller, inverter, and plant as distinct internal subsystems. Bring separately referenced controller models or custom libraries needed by the default run into the same file as readable subsystems. Preserve rates, execution order, types, and initialization.
 - Keep default stimuli inside the model using blocks or embedded scenario data. Use mask parameters or explicit inputs for configuration that must travel with a copied controller.
 - Keep initialization and inputs independent of setup scripts, external data files, additional project models or dictionaries, preloaded workspace variables, and personal paths. Public learning downloads contain no `.m` files. Declare the MATLAB release and required MathWorks products.
-- Verify the selected files in a clean MATLAB session and a fresh directory containing only those files. For SpeedLoop style, confirm the dictionary resolves from that directory. Open the SLX without setup, then run the applicable checks. When consolidating an existing model, replay the same inputs and compare against its baseline.
+- Verify the selected files in a clean MATLAB session and a fresh directory containing only those files. For two-file delivery, confirm the dictionary resolves from that directory. Open the SLX without setup, then run the applicable checks. When consolidating an existing model, replay the same inputs and compare against its baseline.
 
 Use the auditor's `simulation` profile for the demo. For authorized embedded C, apply the `deployment` profile. Build the subsystem in place if it meets that contract, or use a separate deployment copy with the required dictionary and target settings. Keep generated C, raw results and board adapters separate from the demo entry files.
 
@@ -75,4 +75,4 @@ The optional read-only helper [audit_readable_layout.m](scripts/audit_readable_l
 
 ## Handoff
 
-Identify the SLX to open and list its SLDD when the two-file format was chosen. In the handoff or existing README, give a short route using the actual names of the starting block, key subsystem, and result view or output port. Include relevant scope images and a concise change/validation record. For a reusable control module, include its interface/adapter contract and the independent-build evidence actually obtained. Keep temporary fixtures, caches, raw diagnostic dumps, personal paths, and unrelated source material out of the skill and public package.
+Identify the SLX to open and list its SLDD when the two-file format was chosen. For a new or substantially reorganized model, give a three-line reading route using the actual names of the starting block, key subsystem, and result view or output port. For a localized edit, record the part checked and update the existing route only if affected. Include relevant scope images and a concise change/validation record. For a reusable control module, include its interface/adapter contract and the independent-build evidence actually obtained. Keep temporary fixtures, caches, raw diagnostic dumps, personal paths, and unrelated source material out of the skill and public package.
