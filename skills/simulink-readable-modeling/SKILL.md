@@ -1,11 +1,21 @@
 ---
 name: simulink-readable-modeling
-description: Build or refactor readable Simulink models and portable controllers. Ask which open-and-run delivery format to use for teaching examples, with or without a companion data dictionary. For audit-only requests, prefer simulink-model-auditor.
+description: Build or refactor readable Simulink models and portable controllers. Before any modeling work, confirm SLX only, SLX plus a companion dictionary, or AI selection between those two formats. For audit-only requests, prefer simulink-model-auditor.
 ---
 
 # Simulink Readable Modeling
 
 Make each diagram understandable at its own level, and make reusable control modules independent of their test harness. Apply this to the requested scope; retain the user's algorithm, tuned settings, interface contracts, and authorized changes.
+
+## Select the modeling mode before editing
+
+Every model built, changed, or repackaged with this skill uses one of these three choices. This includes control algorithms, engineering simulations, deployment controllers, layout changes, and teaching examples. Ask at the start unless the user already selected a mode or delegated the choice for this task. Inspect existing files if needed, and wait for the answer before editing or creating models.
+
+1. **Only `.slx`.** Store parameters, types, and lookup tables in the model workspace with **Model File** as its data source. Deliver one model file.
+2. **`.slx` + `.sldd` (SpeedLoop style).** Store shared parameters, types, and lookup tables in a same-named dictionary next to the model. Link it by filename. Deliver the pair.
+3. **AI decides.** Select mode 1 or 2 based on the model's dependencies and purpose. Prefer a single SLX for self-contained models and a companion dictionary for shared typed calibrations, versioned parameter sets, or audit-gated embedded builds. Report the selected mode and reason.
+
+The selected format governs the primary model files. Keep model-specific dependencies within those files. A separate build copy used for embedded C can have the dictionary and settings required by the deployment audit. Generated code, test results, and board adapters may be supplied separately when requested.
 
 ## Inspect before choosing a structure
 
@@ -30,20 +40,14 @@ Read [layout-and-refactoring.md](references/layout-and-refactoring.md) when arra
 - Treat automatic layout as a first pass. Structural edits can move previously arranged blocks. Review again after adding routing blocks, and restore the intended rows and columns through the supported layout tool.
 - Before delivery, review the saved model's exports at their final display size. If the model appears in a video, inspect the encoded overview and key close-ups at playback size. Follow the [visual acceptance checklist](references/layout-and-refactoring.md#visual-acceptance-before-delivery) even when the block-overlap check passes.
 
-## Ask how to package the simulation
+## Package and verify the selected format
 
-Before building or repackaging a teaching simulation, paper-video model, or public learning example, offer these three choices. An explicit format or delegation in the current request answers the question. Wait for the choice before format-dependent work.
-
-1. **Only `.slx`.** Store parameters, types and lookup tables in the model workspace with **Model File** as its data source. Deliver one file.
-2. **`.slx` + `.sldd` (SpeedLoop style).** Store shared parameters, types and lookup tables in the same-named dictionary next to the model. Link it by filename. Deliver both files.
-3. **AI decides.** Prefer one SLX for a self-contained teaching example. Keep the companion dictionary when sharing typed calibrations, maintaining a versioned parameter set, or reusing the model for an audit-gated embedded build. State which format was used and why.
-
-In both formats the SLX is the only file to open. Clicking **Run** must execute the default case and show its results in a Scope or Simulation Data Inspector.
+The SLX is the only file to open. For a runnable simulation, clicking **Run** must execute the default case and show its results in a Scope or Simulation Data Inspector. For a standalone component, verify that the model updates in isolation and check its documented interface.
 
 - Keep the test case, controller, inverter, and plant as distinct internal subsystems. Bring separately referenced controller models or custom libraries needed by the default run into the same file as readable subsystems. Preserve rates, execution order, types, and initialization.
 - Keep default stimuli inside the model using blocks or embedded scenario data. Use mask parameters or explicit inputs for configuration that must travel with a copied controller.
 - Keep initialization and inputs independent of setup scripts, external data files, additional project models or dictionaries, preloaded workspace variables, and personal paths. Public learning downloads contain no `.m` files. Declare the MATLAB release and required MathWorks products.
-- Verify the selected files in a clean MATLAB session and a fresh directory containing only those files. For SpeedLoop style, confirm the dictionary resolves from that directory. Open the SLX, run the default case without setup, and check the expected traces. When consolidating an existing model, replay the same inputs and compare against its baseline.
+- Verify the selected files in a clean MATLAB session and a fresh directory containing only those files. For SpeedLoop style, confirm the dictionary resolves from that directory. Open the SLX without setup, then run the applicable checks. When consolidating an existing model, replay the same inputs and compare against its baseline.
 
 Use the auditor's `simulation` profile for the demo. For authorized embedded C, apply the `deployment` profile. Build the subsystem in place if it meets that contract, or use a separate deployment copy with the required dictionary and target settings. Keep generated C, raw results and board adapters separate from the demo entry files.
 
@@ -69,4 +73,4 @@ The optional read-only helper [audit_readable_layout.m](scripts/audit_readable_l
 
 ## Handoff
 
-Identify the SLX to open and list its SLDD when the two-file format was chosen. For other projects, list the entry point and declared dependencies. Include relevant scope images and a concise change/validation record. For a reusable control module, include its interface/adapter contract and the independent-build evidence actually obtained. Keep temporary fixtures, caches, raw diagnostic dumps, personal paths, and unrelated source material out of the skill and public package.
+Identify the SLX to open and list its SLDD when the two-file format was chosen. Include relevant scope images and a concise change/validation record. For a reusable control module, include its interface/adapter contract and the independent-build evidence actually obtained. Keep temporary fixtures, caches, raw diagnostic dumps, personal paths, and unrelated source material out of the skill and public package.
